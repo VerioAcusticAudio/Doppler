@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verio - Simulador de Efecto Doppler</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+    const _icons = {
+        'waves': '<polyline points="2 6 6 2 10 6 14 2 18 6 22 2"/><polyline points="2 12 6 8 10 12 14 8 18 12 22 8"/><polyline points="2 18 6 14 10 18 14 14 18 18 22 14"/>',
+        'play': '<polygon points="6 3 20 12 6 21 6 3"/>',
+        'pause': '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
+        'square': '<rect x="3" y="3" width="18" height="18" rx="2"/>',
+        'folder-open': '<path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/>',
+        'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+        'radio-receiver': '<path d="M5 16v2"/><path d="M19 16v2"/><rect width="20" height="8" x="2" y="8" rx="2"/><path d="M18 8V6a6 6 0 0 0-12 0v2"/>',
+        'user': '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        'settings-2': '<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
+        'volume-2': '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>',
+        'volume-x': '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/>',
+        'speaker': '<rect width="16" height="20" x="4" y="2" rx="2"/><path d="M12 6h.01"/><circle cx="12" cy="14" r="4"/><path d="M12 14h.01"/>',
+        'activity': '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+        'calculator': '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>',
+        'compass': '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+        'line-chart': '<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',
+        'mouse-pointer-2': '<path d="m4 4 7.07 17 2.51-7.39L21 11.07z"/>',
+        'table': '<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+        'trash-2': '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+        'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+        'sigma': '<path d="M18 7V4H6l6 8-6 8h12v-3"/>',
+        'image': '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+        'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+        'zoom-in': '<circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="11" x2="11" y1="8" y2="14"/><line x1="8" x2="14" y1="11" y2="11"/>',
+        'zoom-out': '<circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="8" x2="14" y1="11" y2="11"/>',
+        'alert-triangle': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>',
+        'crosshair': '<circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="6"/><line x1="12" x2="12" y1="18" y2="22"/>'
+    };
+    const lucide = {
+        createIcons: function() {
+            document.querySelectorAll('i[data-lucide]').forEach(el => {
+                const name = el.getAttribute('data-lucide');
+                const svg = _icons[name];
+                if (!svg) return;
+                const s = document.createElementNS('http://www.w3.org/2000/svg','svg');
+                const w = el.style.width || '18';
+                const h = el.style.height || '18';
+                s.setAttribute('width', parseInt(w) || 18);
+                s.setAttribute('height', parseInt(h) || 18);
+                s.setAttribute('viewBox','0 0 24 24');
+                s.setAttribute('fill','none');
+                s.setAttribute('stroke','currentColor');
+                s.setAttribute('stroke-width','2');
+                s.setAttribute('stroke-linecap','round');
+                s.setAttribute('stroke-linejoin','round');
+                s.innerHTML = svg;
+                el.replaceWith(s);
+            });
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --cream-light: #FDF8F3;
+            --cream: #F5EDE4;
+            --cream-dark: #E8DDD0;
+            --sage-light: #C5D4C0;
+            --sage: #9BB08F;
+            --sage-dark: #7A9A6D;
+            --terracotta-light: #D4847C;
+            --terracotta: #B85C50;
+            --terracotta-dark: #8B3A30;
+            --wood-light: #D4B896;
+            --wood: #A67B5B;
+            --wood-dark: #6B4423;
+            --text-primary: #2C2420;
+            --text-secondary: #5C544D;
+            --text-muted: #8A817A;
+            --border: #D4C8BC;
+            --shadow-sm: 0 1px 3px rgba(44, 36, 32, 0.08);
+            --shadow-md: 0 4px 12px rgba(44, 36, 32, 0.12);
+            --shadow-lg: 0 8px 24px rgba(44, 36, 32, 0.16);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--cream-light) 0%, var(--cream) 100%);
+            color: var(--text-primary);
+            line-height: 1.5;
+            height: 100vh;
+            max-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--terracotta) 0%, var(--terracotta-dark) 100%);
+            padding: 14px 24px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+        .header svg { color: var(--cream-light); width: 28px; height: 28px; }
+
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cream-light);
+            letter-spacing: 0.5px;
+        }
+        .logo-text span {
+            font-size: 12px;
+            opacity: 0.9;
+            color: var(--cream-light);
+            font-weight: 500;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 280px;
+            gap: 20px;
+            padding: 20px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            padding-right: 8px;
+            min-height: 0;
+        }
+        .panel::-webkit-scrollbar { width: 6px; }
+        .panel::-webkit-scrollbar-track { background: transparent; }
+        .panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        .panel-section {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+        .panel-section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--cream-dark);
+        }
+        .panel-section-header h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .panel-section-header svg { width: 18px; height: 18px; color: var(--terracotta); }
+
+        .btn-group { display: flex; gap: 8px; margin-bottom: 8px; }
+
+        .btn-action {
+            flex: 1;
+            color: white;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-action:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-action:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-action.play { background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%); }
+        .btn-action.stop { background: linear-gradient(135deg, var(--terracotta) 0%, var(--terracotta-dark) 100%); }
+
+        .btn-secondary {
+            width: 100%;
+            background: var(--cream-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: white;
+            border-color: var(--sage);
+        }
+        .btn-audio {
+            background: linear-gradient(135deg, var(--wood) 0%, var(--wood-dark) 100%);
+            color: white;
+            border: none;
+        }
+        .btn-audio:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+            border-color: transparent;
+        }
+
+        .slider-container { margin-bottom: 14px; }
+        .slider-container:last-child { margin-bottom: 0; }
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .slider-header label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+        input[type="number"] {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            width: 65px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--cream-light);
+            color: var(--terracotta-dark);
+            text-align: right;
+            transition: all 0.2s ease;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--sage);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(155, 176, 143, 0.2);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--cream-dark);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--terracotta);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        select {
+            width: 100%;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--cream-light);
+            color: var(--text-primary);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(155, 176, 143, 0.2); }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        .checkbox-container input { accent-color: var(--terracotta); width: 14px; height: 14px; cursor: pointer; }
+
+        .radio-group {
+            display: flex;
+            justify-content: space-between;
+            background: var(--cream-light);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+        .radio-group label {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        .radio-group input[type="radio"] { display: none; }
+        .radio-group input[type="radio"]:checked + label {
+            background: white;
+            color: var(--terracotta-dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--sage-light) 0%, var(--sage) 100%);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+        .result-card.highlight { background: linear-gradient(135deg, var(--terracotta-light) 0%, var(--terracotta) 100%); }
+        .result-card.neutral { background: linear-gradient(135deg, var(--wood-light) 0%, var(--wood) 100%); }
+        .result-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .result-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 4px;
+            background: var(--cream-dark);
+            padding: 4px;
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+        .tab-btn.active { background: white; color: var(--terracotta-dark); box-shadow: var(--shadow-sm); }
+        .tab-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        .tab-content.active { display: flex; }
+
+        .formula-section {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+        .formula-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--terracotta-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--cream-dark);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .formula-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--cream-light);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+        }
+        .formula-step {
+            margin-bottom: 10px;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 10px;
+            line-height: 1.6;
+        }
+        .formula-step:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+        .formula-highlight {
+            color: var(--sage-dark);
+            font-weight: 700;
+            font-size: 14px;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--sage-light);
+            display: inline-block;
+        }
+
+        .viz-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+        .canvas-container {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .canvas-header {
+            padding: 10px 16px;
+            background: var(--cream-light);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .canvas-header svg { width: 14px; height: 14px; color: var(--wood); }
+        #sim-container { flex: 1.1; min-height: 200px; }
+        #graph-container { flex: 1; min-height: 180px; }
+        canvas { width: 100%; flex: 1; min-height: 100px; display: block; }
+
+        .table-container {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: var(--cream);
+            z-index: 1;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        th {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 8px;
+            text-align: right;
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            padding: 8px;
+            text-align: right;
+            border-bottom: 1px solid var(--cream-dark);
+            color: var(--text-primary);
+        }
+        tr:hover td { background-color: var(--cream-light); }
+
+        .info-box {
+            background: linear-gradient(135deg, var(--sage-light) 0%, var(--sage) 100%);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            color: white;
+            font-size: 12px;
+            line-height: 1.5;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .info-box svg { flex-shrink: 0; width: 18px; height: 18px; }
+
+        #tooltip {
+            position: absolute;
+            background: var(--text-primary);
+            color: white;
+            padding: 6px 10px;
+            font-size: 11px;
+            border-radius: var(--radius-sm);
+            pointer-events: none;
+            display: none;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            font-family: 'DM Sans', sans-serif;
+            white-space: pre-line;
+        }
+
+        .mach-indicator {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: mach-pulse 1.2s ease-in-out infinite;
+            margin-top: 10px;
+        }
+        .mach-indicator.subsonic {
+            display: flex;
+            background: linear-gradient(135deg, var(--sage-light), var(--sage));
+            color: white;
+            animation: none;
+        }
+        .mach-indicator.transonic {
+            display: flex;
+            background: linear-gradient(135deg, #E8A838, #D4842C);
+            color: white;
+        }
+        .mach-indicator.supersonic {
+            display: flex;
+            background: linear-gradient(135deg, #D44C4C, #A82020);
+            color: white;
+        }
+        .mach-indicator svg { width: 14px; height: 14px; }
+        .mach-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            margin-left: auto;
+        }
+        @keyframes mach-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .canvas-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+        }
+        .canvas-toolbar button {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .canvas-toolbar button:hover {
+            background: var(--cream);
+            border-color: var(--sage);
+            color: var(--sage-dark);
+        }
+        .canvas-toolbar button svg { width: 12px; height: 12px; }
+        .zoom-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--terracotta);
+            font-weight: 700;
+            padding: 1px 4px;
+            background: var(--cream-light);
+            border-radius: 3px;
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 1100px) {
+            .app-container { grid-template-columns: 280px 1fr; }
+            .data-panel { display: none; }
+        }
+        @media (max-height: 700px) {
+            .app-container { gap: 12px; padding: 12px; }
+            .tabs-container { margin-bottom: 8px; }
+            #sim-container { min-height: 150px; }
+            #graph-container { min-height: 140px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <i data-lucide="waves"></i>
+        <div class="logo-text">
+            <h1>Simulador de Efecto Doppler</h1>
+            <span>Análisis Cinemático y Espectral</span>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="panel control-panel">
+            <div class="panel-section" style="padding: 12px;">
+                <div class="btn-group">
+                    <button id="btn-play" class="btn-action play"><i data-lucide="play"></i> Iniciar</button>
+                    <button id="btn-stop" class="btn-action stop" disabled><i data-lucide="square"></i> Detener</button>
+                </div>
+                <label class="checkbox-container">
+                    <input type="checkbox" id="chk-single-cycle">
+                    Detener tras un ciclo completo
+                </label>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-header">
+                    <i data-lucide="folder-open"></i>
+                    <h3>Escenarios Predefinidos</h3>
+                </div>
+                <select id="preset-combo">
+                    <option value="">--- Seleccionar Escenario ---</option>
+                    <option value="Ambulancia Pasando">Ambulancia Pasando</option>
+                    <option value="Jet Supersónico">Jet Supersónico</option>
+                    <option value="Observador en Movimiento">Observador en Movimiento</option>
+                    <option value="Cruce en diagonal">Cruce en diagonal</option>
+                </select>
+                <button id="btn-reset" class="btn-secondary" style="margin-top: 10px;">
+                    <i data-lucide="rotate-ccw"></i> Restablecer Valores
+                </button>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-header">
+                    <i data-lucide="radio-receiver"></i>
+                    <h3>Fuente Sonora (Emisor)</h3>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label>Frecuencia (Hz)</label>
+                        <input type="number" id="num-source-freq" value="440">
+                    </div>
+                    <input type="range" id="rng-source-freq" min="200" max="1000" value="440">
+                </div>
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label>Velocidad X (m/s)</label>
+                        <input type="number" id="num-source-vx" value="100">
+                    </div>
+                    <input type="range" id="rng-source-vx" min="0" max="500" value="100">
+                </div>
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label>Velocidad Y (m/s)</label>
+                        <input type="number" id="num-source-vy" value="0">
+                    </div>
+                    <input type="range" id="rng-source-vy" min="0" max="200" value="0">
+                </div>
+                <div id="mach-indicator" class="mach-indicator">
+                    <i data-lucide="zap"></i>
+                    <span id="mach-label">Subsónico</span>
+                    <span class="mach-number" id="mach-value">M 0.29</span>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-header">
+                    <i data-lucide="user"></i>
+                    <h3>Observador/Oyente (Receptor)</h3>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label>Velocidad X (m/s)</label>
+                        <input type="number" id="num-obs-vx" value="0">
+                    </div>
+                    <input type="range" id="rng-obs-vx" min="0" max="100" value="0">
+                </div>
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label>Velocidad Y (m/s)</label>
+                        <input type="number" id="num-obs-vy" value="0">
+                    </div>
+                    <input type="range" id="rng-obs-vy" min="0" max="100" value="0">
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-header">
+                    <i data-lucide="settings-2"></i>
+                    <h3>Entorno de Simulación</h3>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label>Distancia Inicial (m)</label>
+                        <input type="number" id="num-dist" value="200">
+                    </div>
+                    <input type="range" id="rng-dist" min="100" max="2000" value="200">
+                </div>
+                <div style="margin-top: 14px;">
+                    <label style="font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 6px;">Velocidad de Reproducción</label>
+                    <div class="radio-group">
+                        <input type="radio" id="spd-05" name="speed" value="0.5">
+                        <label for="spd-05">0.5x</label>
+                        <input type="radio" id="spd-10" name="speed" value="1.0" checked>
+                        <label for="spd-10">1.0x</label>
+                        <input type="radio" id="spd-20" name="speed" value="2.0">
+                        <label for="spd-20">2.0x</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section" style="margin-bottom: 10px; flex-shrink: 0;">
+                <div class="panel-section-header">
+                    <i data-lucide="volume-2"></i>
+                    <h3>Sistema de Audio</h3>
+                </div>
+                <button id="btn-audio" class="btn-secondary btn-audio">
+                    <i data-lucide="speaker"></i> Reproducir Audio
+                </button>
+                <div class="slider-container" style="margin-top: 14px;">
+                    <div class="slider-header">
+                        <label>Nivel</label>
+                    </div>
+                    <input type="range" id="rng-volume" min="0" max="1" step="0.01" value="0.5">
+                </div>
+            </div>
+        </aside>
+
+        <main class="viz-panel">
+            <div class="tabs-container">
+                <button id="tab-btn-viz" class="tab-btn active" onclick="switchTab('viz')"><i data-lucide="activity"></i> Simulación y Representación Gráfica</button>
+                <button id="tab-btn-math" class="tab-btn" onclick="switchTab('math')" disabled><i data-lucide="calculator"></i> Desarrollo Matemático</button>
+            </div>
+            <div id="tab-content-viz" class="tab-content active">
+                <div class="canvas-container" id="sim-container">
+                    <div class="canvas-header">
+                        <i data-lucide="compass"></i> Representación de la Fuente en función del Observador/Oyente 
+                    </div>
+                    <canvas id="sim-canvas"></canvas>
+                </div>
+                <div class="canvas-container" id="graph-container">
+                    <div class="canvas-header">
+                        <i data-lucide="line-chart"></i> Frecuencia Percibida en función de la Posición
+                        <div class="canvas-toolbar">
+                            <button id="btn-zoom-in" title="Acercar"><i data-lucide="zoom-in"></i></button>
+                            <span id="zoom-badge" class="zoom-badge">1.0x</span>
+                            <button id="btn-zoom-out" title="Alejar"><i data-lucide="zoom-out"></i></button>
+                            <button id="btn-zoom-reset" title="Reiniciar zoom" style="margin-left: 2px;">Reiniciar</button>
+                            <button id="btn-export-png" title="Exportar gráfica como PNG"><i data-lucide="image"></i> PNG</button>
+                        </div>
+                    </div>
+                    <canvas id="graph-canvas"></canvas>
+                </div>
+            </div>
+            <div id="tab-content-math" class="tab-content" style="overflow-y: auto; padding-right: 4px; padding-bottom: 20px;"></div>
+        </main>
+
+        <aside class="panel data-panel">
+            <div class="panel-section" style="flex: none;">
+                <div class="panel-section-header" style="margin-bottom: 12px;">
+                    <i data-lucide="activity"></i>
+                    <h3>Monitoreo en Tiempo Real</h3>
+                </div>
+                <div class="metrics-grid">
+                    <div class="result-card highlight">
+                        <span class="result-label">Frec. Máxima</span>
+                        <span class="result-value" id="lbl-max-freq">-- Hz</span>
+                    </div>
+                    <div class="result-card">
+                        <span class="result-label">Frec. Mínima</span>
+                        <span class="result-value" id="lbl-min-freq">-- Hz</span>
+                    </div>
+                    <div class="result-card neutral">
+                        <span class="result-label">Rango (Δf)</span>
+                        <span class="result-value" id="lbl-delta">-- Hz</span>
+                    </div>
+                    <div class="result-card neutral">
+                        <span class="result-label">Dispersión (σ)</span>
+                        <span class="result-value" id="lbl-sigma">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section" style="flex: none;">
+                <div class="panel-section-header" style="margin-bottom: 12px;">
+                    <i data-lucide="mouse-pointer-2"></i>
+                    <h3>Analizador de Gráfica</h3>
+                </div>
+                <div class="metrics-grid">
+                    <div class="result-card" style="background: white; border: 1px solid var(--border); box-shadow: none;">
+                        <span class="result-label" style="color: var(--text-secondary);">Posición Nodo X</span>
+                        <span class="result-value" id="lbl-node-pos" style="color: var(--terracotta);">-- m</span>
+                    </div>
+                    <div class="result-card" style="background: white; border: 1px solid var(--border); box-shadow: none;">
+                        <span class="result-label" style="color: var(--text-secondary);">Frec. Instantánea</span>
+                        <span class="result-value" id="lbl-node-freq" style="color: var(--sage-dark);">-- Hz</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 12px; min-height: 150px;">
+                <div class="panel-section-header" style="margin-bottom: 8px;">
+                    <i data-lucide="table"></i>
+                    <h3>Registro de Variables</h3>
+                </div>
+                <div class="table-container">
+                    <table id="data-table">
+                        <thead><tr><th>T (ms)</th><th>Frec. (Hz)</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="btn-group" style="margin-bottom: 0;">
+                    <button id="btn-clear-table" class="btn-secondary"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Limpiar</button>
+                    <button id="btn-export" class="btn-secondary"><i data-lucide="download" style="width: 14px; height: 14px;"></i> CSV</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div id="tooltip"></div>
+
+    <script>
+        lucide.createIcons();
+
+        var C_SOUND = 343.0,
+            TICK = 30,
+            DIST_DECAY = 0.03,
+            PAD = 60,
+            WAVE_R_MAX = 2.5;
+
+        var state = {
+            running: false,
+            paused: false,
+            audioOn: false,
+            muted: true,
+            frame: 0,
+            posS: [-200, 0],
+            posO: [0, 50],
+            waves: [],
+            hPos: [],
+            hFreq: [],
+            snaps: [],
+            distLim: 200,
+            plotLim: 220,
+            fSrc: 440,
+            speed: 1.0,
+            audioCtx: null,
+            osc: null,
+            gain: null,
+            cursorNode: null,
+            zoom: 1.0,
+            panX: 0
+        };
+
+        var presets = {
+            "Ambulancia Pasando": {vsx: 150, vsy: 0, vox: 0, voy: 0, freq: 700},
+            "Jet Supersónico": {vsx: 450, vsy: 0, vox: 0, voy: 0, freq: 500},
+            "Observador/Oyente en Movimiento": {vsx: 0, vsy: 0, vox: 50, voy: 0, freq: 440},
+            "Cruce en diagonal": {vsx: 120, vsy: 30, vox: 0, voy: 0, freq: 600}
+        };
+
+        var els = {};
+        var allIds = [
+            'btn-play', 'btn-stop', 'btn-reset', 'btn-audio', 'btn-clear-table', 'btn-export',
+            'chk-single-cycle', 'preset-combo',
+            'sim-canvas', 'graph-canvas', 'data-table', 'tooltip',
+            'lbl-max-freq', 'lbl-min-freq', 'lbl-delta', 'lbl-sigma', 'lbl-node-pos', 'lbl-node-freq',
+            'rng-volume', 'tab-btn-viz', 'tab-btn-math',
+            'btn-zoom-in', 'btn-zoom-out', 'btn-zoom-reset', 'btn-export-png', 'zoom-badge',
+            'mach-indicator', 'mach-label', 'mach-value'
+        ];
+        ['source-freq', 'source-vx', 'source-vy', 'obs-vx', 'obs-vy', 'dist'].forEach(function(k) {
+            allIds.push('num-' + k, 'rng-' + k);
+        });
+        allIds.forEach(function(id) { els[id] = document.getElementById(id); });
+
+        var radioSpeed = document.getElementsByName('speed');
+        var ctxSim = els['sim-canvas'].getContext('2d');
+        var ctxGraph = els['graph-canvas'].getContext('2d');
+        var lastTick = 0;
+
+        function init() {
+            resizeCanvases();
+            window.addEventListener('resize', function() {
+                resizeCanvases();
+                drawSim();
+                drawGraph();
+            });
+            bindControls();
+            requestAnimationFrame(loop);
+            drawGraph(true);
+        }
+
+        function resizeCanvases() {
+            [els['sim-canvas'], els['graph-canvas']].forEach(function(cv) {
+                cv.width = cv.clientWidth;
+                cv.height = cv.clientHeight;
+            });
+        }
+
+        function bindControls() {
+            var pairs = [
+                {id: 'source-freq', min: 200, max: 1000},
+                {id: 'source-vx', min: 0, max: 500},
+                {id: 'source-vy', min: 0, max: 200},
+                {id: 'obs-vx', min: 0, max: 100},
+                {id: 'obs-vy', min: 0, max: 100},
+                {id: 'dist', min: 100, max: 2000}
+            ];
+
+            pairs.forEach(function(p) {
+                var num = els['num-' + p.id];
+                var rng = els['rng-' + p.id];
+                num.addEventListener('change', function() {
+                    var v = Math.max(p.min, Math.min(p.max, parseFloat(num.value)));
+                    num.value = Math.round(v);
+                    rng.value = v;
+                });
+                rng.addEventListener('input', function() { num.value = rng.value; });
+            });
+
+            els['btn-play'].addEventListener('click', togglePlay);
+            els['btn-stop'].addEventListener('click', stopSim);
+            els['btn-reset'].addEventListener('click', resetParams);
+            els['btn-audio'].addEventListener('click', toggleMute);
+            els['preset-combo'].addEventListener('change', loadPreset);
+            els['btn-clear-table'].addEventListener('click', clearTable);
+            els['btn-export'].addEventListener('click', exportCSV);
+
+            Array.from(radioSpeed).forEach(function(r) {
+                r.addEventListener('change', function(e) {
+                    if (e.target.checked) state.speed = parseFloat(e.target.value);
+                });
+            });
+
+            els['graph-canvas'].addEventListener('mousemove', onGraphHover);
+            els['graph-canvas'].addEventListener('mouseleave', function() {
+                state.cursorNode = null;
+                drawGraph();
+            });
+
+            els['sim-canvas'].addEventListener('mousemove', function(e) {
+                var rect = els['sim-canvas'].getBoundingClientRect();
+                if (e.clientY - rect.top < 30 && e.clientX - rect.left < 150) {
+                    showTooltip(e, "Emisor: Terracota\nObservador: Salvia");
+                } else {
+                    hideTooltip();
+                }
+            });
+            els['sim-canvas'].addEventListener('mouseleave', hideTooltip);
+
+            els['btn-zoom-in'].addEventListener('click', function() { doZoom(0.25); });
+            els['btn-zoom-out'].addEventListener('click', function() { doZoom(-0.25); });
+            els['btn-zoom-reset'].addEventListener('click', function() {
+                state.zoom = 1.0;
+                state.panX = 0;
+                refreshZoomBadge();
+                drawGraph();
+            });
+            els['btn-export-png'].addEventListener('click', exportGraphPNG);
+
+            els['graph-canvas'].addEventListener('wheel', function(e) {
+                e.preventDefault();
+                doZoom(e.deltaY < 0 ? 0.15 : -0.15);
+            }, {passive: false});
+
+            ['rng-source-vx', 'rng-source-vy'].forEach(function(id) {
+                els[id].addEventListener('input', refreshMach);
+            });
+            refreshMach();
+        }
+
+        function showTooltip(e, text) {
+            var tt = els['tooltip'];
+            tt.innerText = text;
+            tt.style.display = 'block';
+            tt.style.left = (e.pageX + 15) + 'px';
+            tt.style.top = (e.pageY + 10) + 'px';
+        }
+
+        function hideTooltip() { els['tooltip'].style.display = 'none'; }
+
+        function togglePlay() {
+            if (!state.running) startSim();
+            else {
+                state.paused = !state.paused;
+                refreshPlayBtn();
+            }
+        }
+
+        function startSim() {
+            state.running = true;
+            state.paused = false;
+            state.frame = 0;
+            state.hPos = [];
+            state.hFreq = [];
+            state.snaps = [];
+            state.waves = [];
+            state.zoom = 1.0;
+            state.panX = 0;
+            refreshZoomBadge();
+
+            ['lbl-max-freq', 'lbl-min-freq', 'lbl-delta'].forEach(function(k) { els[k].innerText = '-- Hz'; });
+            els['lbl-sigma'].innerText = '--';
+            els['lbl-node-pos'].innerText = '-- m';
+            els['lbl-node-freq'].innerText = '-- Hz';
+
+            clearTable();
+            refreshPlayBtn();
+            els['btn-stop'].disabled = false;
+            setInputState(false);
+
+            state.distLim = parseFloat(els['rng-dist'].value);
+            state.fSrc = parseFloat(els['rng-source-freq'].value);
+            state.plotLim = state.distLim * 1.1;
+            state.posS = [-state.distLim, 0];
+            state.posO = [0, 50];
+
+            els['tab-btn-math'].disabled = true;
+            switchTab('viz');
+
+            if (!state.muted) startAudio();
+        }
+
+        function stopSim() {
+            state.running = false;
+            state.paused = false;
+            stopAudio();
+            refreshPlayBtn();
+            els['btn-stop'].disabled = true;
+            setInputState(true);
+
+            state.distLim = parseFloat(els['rng-dist'].value);
+            state.fSrc = parseFloat(els['rng-source-freq'].value);
+            state.cursorNode = null;
+            drawGraph();
+            drawSim();
+
+            if (state.snaps.length >= 3) {
+                buildMathReport();
+                els['tab-btn-math'].disabled = false;
+                switchTab('math');
+            }
+        }
+
+        function refreshPlayBtn() {
+            var btn = els['btn-play'];
+            if (state.running && !state.paused) {
+                btn.innerHTML = '<i data-lucide="pause"></i> Pausar';
+                btn.style.background = 'linear-gradient(135deg, var(--wood) 0%, var(--wood-dark) 100%)';
+            } else if (state.paused) {
+                btn.innerHTML = '<i data-lucide="play"></i> Continuar';
+                btn.style.background = 'linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%)';
+            } else {
+                btn.innerHTML = '<i data-lucide="play"></i> Iniciar';
+                btn.style.background = 'linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%)';
+            }
+            lucide.createIcons();
+        }
+
+        function setInputState(on) {
+            document.querySelectorAll('input:not(#chk-single-cycle):not(#rng-volume):not([name="speed"]), select').forEach(function(inp) {
+                inp.disabled = !on;
+                inp.style.opacity = on ? '1' : '0.6';
+                inp.style.cursor = on ? 'auto' : 'not-allowed';
+            });
+        }
+
+        function loop(ts) {
+            if (state.running && !state.paused && ts - lastTick > (TICK / state.speed)) {
+                tick();
+                lastTick = ts;
+            }
+            if (state.running || !state.paused) drawSim();
+            if (state.running) drawGraph();
+            requestAnimationFrame(loop);
+        }
+
+        function tick() {
+            var dt = TICK / 1000;
+            var vsx = parseFloat(els['rng-source-vx'].value);
+            var vsy = parseFloat(els['rng-source-vy'].value);
+            var vox = parseFloat(els['rng-obs-vx'].value);
+            var voy = parseFloat(els['rng-obs-vy'].value);
+            var f0 = parseFloat(els['rng-source-freq'].value);
+
+            state.posS[0] += vsx * dt;
+            state.posS[1] += vsy * dt;
+            state.posO[0] += vox * dt;
+            state.posO[1] += voy * dt;
+
+            var bound = state.distLim * 1.5;
+            if (Math.abs(state.posS[0]) > bound) {
+                if (els['chk-single-cycle'].checked) { stopSim(); return; }
+                state.posS[0] = -state.distLim;
+                state.posS[1] = 0;
+                state.hPos = [];
+                state.hFreq = [];
+                state.waves = [];
+            }
+
+            var dx = state.posO[0] - state.posS[0];
+            var dy = state.posO[1] - state.posS[1];
+            var dist = Math.hypot(dx, dy);
+            var fp = f0, ux = 0, uy = 0, vsr = 0, vor = 0;
+
+            if (dist > 1e-4) {
+                ux = dx / dist;
+                uy = dy / dist;
+                vsr = vsx * ux + vsy * uy;
+                vor = vox * ux + voy * uy;
+                if (Math.abs(C_SOUND - vsr) > 1e-4)
+                    fp = f0 * (C_SOUND - vor) / (C_SOUND - vsr);
+            }
+
+            state.hPos.push(state.posS[0]);
+            state.hFreq.push(fp);
+            state.snaps.push({
+                t: state.frame * dt * 1000,
+                xs: state.posS[0], ys: state.posS[1],
+                xo: state.posO[0], yo: state.posO[1],
+                dx: dx, dy: dy, dist: dist,
+                ux: ux, uy: uy,
+                vsx: vsx, vsy: vsy, vox: vox, voy: voy,
+                vsr: vsr, vor: vor,
+                f0: f0, fp: fp
+            });
+
+            if (state.frame % 5 === 0)
+                state.waves.push({x: state.posS[0], y: state.posS[1], r: 0});
+
+            var maxR = state.plotLim * WAVE_R_MAX;
+            state.waves = state.waves.filter(function(w) {
+                w.r += C_SOUND * dt;
+                return w.r < maxR;
+            });
+
+            refreshStats(fp);
+            updateAudio(fp, dist);
+
+            if (state.frame % 10 === 0)
+                addRow(state.hPos.length * dt * 1000, fp);
+
+            state.frame++;
+        }
+
+        function refreshStats(f) {
+            var arr = state.hFreq;
+            if (!arr.length) return;
+            var mx = -Infinity, mn = Infinity, sum = 0;
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] > mx) mx = arr[i];
+                if (arr[i] < mn) mn = arr[i];
+                sum += arr[i];
+            }
+            var avg = sum / arr.length;
+            var sq = 0;
+            for (var i = 0; i < arr.length; i++) sq += (arr[i] - avg) * (arr[i] - avg);
+            var sigma = Math.sqrt(sq / arr.length);
+
+            els['lbl-max-freq'].innerText = mx.toFixed(1) + ' Hz';
+            els['lbl-min-freq'].innerText = mn.toFixed(1) + ' Hz';
+            els['lbl-delta'].innerText = (mx - mn).toFixed(1) + ' Hz';
+            els['lbl-sigma'].innerText = sigma.toFixed(1);
+        }
+
+        function drawSim() {
+            var cv = els['sim-canvas'];
+            var w = cv.width, h = cv.height;
+            var ctx = ctxSim;
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.strokeStyle = '#D4C8BC';
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(20, h / 2); ctx.lineTo(w - 20, h / 2);
+            ctx.moveTo(w / 2, 20); ctx.lineTo(w / 2, h - 20);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            var scale = (w / 2 - 20) / (state.plotLim || 200);
+            var toCx = function(x) { return w / 2 + x * scale; };
+            var toCy = function(y) { return h / 2 - y * scale; };
+
+            ctx.strokeStyle = '#D4B896';
+            ctx.lineWidth = 1;
+            state.waves.forEach(function(wv) {
+                ctx.beginPath();
+                ctx.arc(toCx(wv.x), toCy(wv.y), wv.r * scale, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+
+            var sx = toCx(state.posS[0]), sy = toCy(state.posS[1]);
+            ctx.fillStyle = '#B85C50';
+            ctx.beginPath(); ctx.arc(sx, sy, 7, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#8B3A30'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.fillStyle = '#2C2420'; ctx.font = "bold 11px 'DM Sans'"; ctx.fillText('E', sx - 4, sy - 12);
+
+            var vMag = Math.hypot(
+                parseFloat(els['rng-source-vx'].value) || 0,
+                parseFloat(els['rng-source-vy'].value) || 0
+            );
+            if (vMag > C_SOUND && state.running) {
+                var halfAngle = Math.asin(C_SOUND / vMag);
+                var len = 120;
+                ctx.strokeStyle = 'rgba(184, 92, 80, 0.4)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([6, 3]);
+                ctx.beginPath();
+                ctx.moveTo(sx, sy);
+                ctx.lineTo(sx - len * Math.cos(halfAngle), sy - len * Math.sin(halfAngle));
+                ctx.moveTo(sx, sy);
+                ctx.lineTo(sx - len * Math.cos(halfAngle), sy + len * Math.sin(halfAngle));
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#D44C4C';
+                ctx.font = "bold 10px 'JetBrains Mono'";
+                ctx.fillText('M' + (vMag / C_SOUND).toFixed(1), sx + 12, sy - 2);
+            }
+
+            var ox = toCx(state.posO[0]), oy = toCy(state.posO[1]);
+            ctx.fillStyle = '#9BB08F';
+            ctx.beginPath(); ctx.arc(ox, oy, 7, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#7A9A6D'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.fillStyle = '#2C2420'; ctx.font = "bold 11px 'DM Sans'"; ctx.fillText('O', ox - 4, oy - 12);
+        }
+
+        function drawGraph(staticOnly) {
+            var cv = els['graph-canvas'];
+            var w = cv.width, h = cv.height;
+            var ctx = ctxGraph;
+            ctx.clearRect(0, 0, w, h);
+
+            var xMaxBase = state.distLim;
+            var xRange = (xMaxBase * 2) / state.zoom;
+            var xMin = state.panX - xRange / 2;
+            var xMax = state.panX + xRange / 2;
+            var fBase = state.fSrc;
+            var yMin = fBase * 0.2;
+            var yMax = fBase * 2.0;
+
+            var toX = function(x) { return PAD + ((x - xMin) / (xMax - xMin)) * (w - 2 * PAD); };
+            var toY = function(f) { return (h - PAD) - ((f - yMin) / (yMax - yMin)) * (h - 2 * PAD); };
+
+            ctx.strokeStyle = '#5C544D';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(PAD, h - PAD); ctx.lineTo(w - PAD, h - PAD);
+            ctx.moveTo(PAD, PAD); ctx.lineTo(PAD, h - PAD);
+            ctx.stroke();
+
+            ctx.fillStyle = '#8A817A';
+            ctx.font = "10px 'JetBrains Mono'";
+            ctx.textAlign = 'center';
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#D4C8BC';
+
+            var step = niceStep(xRange, 5);
+            var xt = Math.ceil(xMin / step) * step;
+            while (xt <= xMax) {
+                var px = toX(xt);
+                if (px >= PAD && px <= w - PAD) {
+                    ctx.beginPath(); ctx.moveTo(px, h - PAD); ctx.lineTo(px, PAD); ctx.stroke();
+                    ctx.fillText(xt.toFixed(0), px, h - PAD + 15);
+                }
+                xt += step;
+            }
+
+            ctx.textAlign = 'right';
+            for (var i = 0; i <= 4; i++) {
+                var r = i / 4;
+                var py = (h - PAD) - r * (h - 2 * PAD);
+                var val = yMin + r * (yMax - yMin);
+                ctx.beginPath(); ctx.moveTo(PAD, py); ctx.lineTo(w - PAD, py); ctx.stroke();
+                ctx.fillText(val.toFixed(0), PAD - 8, py + 3);
+            }
+
+            ctx.fillStyle = '#2C2420';
+            ctx.font = "bold 11px 'DM Sans'";
+            ctx.textAlign = 'center';
+            ctx.fillText('Posición X de Fuente (m)', w / 2, h - 8);
+            ctx.save();
+            ctx.translate(15, h / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Frec (Hz)', 0, 0);
+            ctx.restore();
+            ctx.textAlign = 'start';
+
+            var ySrc = toY(fBase);
+            ctx.strokeStyle = '#D4847C';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(PAD, ySrc); ctx.lineTo(w - PAD, ySrc);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            if (!staticOnly && state.hPos.length > 1) {
+                var px0 = toX(0);
+                if (px0 >= PAD && px0 <= w - PAD) {
+                    ctx.strokeStyle = '#A67B5B';
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath(); ctx.moveTo(px0, PAD); ctx.lineTo(px0, h - PAD); ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = '#A67B5B';
+                    ctx.font = "bold 9px 'DM Sans'";
+                    ctx.textAlign = 'center';
+                    ctx.fillText('x=0', px0, PAD - 4);
+                    ctx.textAlign = 'start';
+                }
+
+                var tZone = state.distLim * 0.25;
+                [tZone, -tZone].forEach(function(mk) {
+                    var pmx = toX(mk);
+                    if (pmx >= PAD && pmx <= w - PAD) {
+                        ctx.strokeStyle = 'rgba(155, 176, 143, 0.5)';
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([3, 5]);
+                        ctx.beginPath(); ctx.moveTo(pmx, PAD); ctx.lineTo(pmx, h - PAD); ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                });
+
+                var pxL = Math.max(PAD, toX(-tZone));
+                var pxR = Math.min(w - PAD, toX(tZone));
+                if (pxR > pxL) {
+                    ctx.fillStyle = 'rgba(155, 176, 143, 0.06)';
+                    ctx.fillRect(pxL, PAD, pxR - pxL, h - 2 * PAD);
+                }
+            }
+
+            if (staticOnly) return;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(PAD, PAD, w - 2 * PAD, h - 2 * PAD);
+            ctx.clip();
+
+            if (state.hPos.length > 1) {
+                ctx.strokeStyle = '#7A9A6D';
+                ctx.lineWidth = 3;
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                var started = false;
+                for (var i = 0; i < state.hPos.length; i++) {
+                    var px = toX(state.hPos[i]);
+                    var py = toY(Math.max(yMin, Math.min(yMax, state.hFreq[i])));
+                    if (!started) { ctx.moveTo(px, py); started = true; }
+                    else ctx.lineTo(px, py);
+                }
+                ctx.stroke();
+            }
+
+            if (state.cursorNode) {
+                var nd = state.cursorNode;
+                var npx = toX(nd.x);
+                var clampF = Math.max(yMin, Math.min(yMax, nd.f));
+                var npy = toY(clampF);
+
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = '#A67B5B';
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(npx, PAD); ctx.lineTo(npx, h - PAD); ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#B85C50';
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(npx, npy, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#8B3A30';
+                ctx.font = "bold 12px 'JetBrains Mono'";
+                ctx.fillText(nd.f.toFixed(0), npx + 18, npy - 10);
+            }
+
+            ctx.restore();
+        }
+
+        function niceStep(range, ticks) {
+            var rough = range / ticks;
+            var mag = Math.pow(10, Math.floor(Math.log10(rough)));
+            var n = rough / mag;
+            if (n < 1.5) return mag;
+            if (n < 3.5) return 2 * mag;
+            if (n < 7.5) return 5 * mag;
+            return 10 * mag;
+        }
+
+        function onGraphHover(e) {
+            if (!state.hPos.length) return;
+            var rect = els['graph-canvas'].getBoundingClientRect();
+            var w = rect.width;
+            var mx = Math.max(PAD, Math.min(w - PAD, e.clientX - rect.left));
+
+            var xRange = (state.distLim * 2) / state.zoom;
+            var xMin = state.panX - xRange / 2;
+            var ratio = (mx - PAD) / (w - 2 * PAD);
+            var xPhys = xMin + ratio * xRange;
+
+            var best = 0, bestD = Infinity;
+            for (var i = 0; i < state.hPos.length; i++) {
+                var d = Math.abs(state.hPos[i] - xPhys);
+                if (d < bestD) { bestD = d; best = i; }
+            }
+
+            state.cursorNode = {x: state.hPos[best], f: state.hFreq[best]};
+            els['lbl-node-pos'].innerText = state.hPos[best].toFixed(1) + ' m';
+            els['lbl-node-freq'].innerText = state.hFreq[best].toFixed(1) + ' Hz';
+            drawGraph();
+        }
+
+        function doZoom(delta) {
+            state.zoom = Math.max(0.5, Math.min(8.0, state.zoom + delta));
+            refreshZoomBadge();
+            drawGraph();
+        }
+
+        function refreshZoomBadge() {
+            els['zoom-badge'].textContent = state.zoom.toFixed(1) + 'x';
+        }
+
+        function exportGraphPNG() {
+            var cv = els['graph-canvas'];
+            var s = 2;
+            var off = document.createElement('canvas');
+            off.width = cv.width * s;
+            off.height = cv.height * s;
+            var octx = off.getContext('2d');
+            octx.scale(s, s);
+            octx.fillStyle = 'white';
+            octx.fillRect(0, 0, cv.width, cv.height);
+            octx.drawImage(cv, 0, 0, cv.width, cv.height);
+            octx.fillStyle = 'rgba(44, 36, 32, 0.3)';
+            octx.font = "10px 'DM Sans', sans-serif";
+            octx.textAlign = 'right';
+            octx.fillText('Simulador Efecto Doppler', cv.width - 10, cv.height - 8);
+            var a = document.createElement('a');
+            a.download = 'doppler_grafica.png';
+            a.href = off.toDataURL('image/png');
+            a.click();
+        }
+
+        function refreshMach() {
+            var vx = parseFloat(els['rng-source-vx'].value) || 0;
+            var vy = parseFloat(els['rng-source-vy'].value) || 0;
+            var mach = Math.hypot(vx, vy) / C_SOUND;
+            var ind = els['mach-indicator'];
+            var lbl = els['mach-label'];
+            ind.className = 'mach-indicator';
+            els['mach-value'].textContent = 'M ' + mach.toFixed(2);
+
+            if (mach < 0.8) {
+                ind.classList.add('subsonic');
+                lbl.textContent = 'Subsónico';
+            } else if (mach < 1.2) {
+                ind.classList.add('transonic');
+                lbl.textContent = 'Transónico';
+            } else {
+                ind.classList.add('supersonic');
+                lbl.textContent = '¡Supersónico!';
+            }
+        }
+
+        function startAudio() {
+            if (!state.audioCtx) {
+                var AC = window.AudioContext || window.webkitAudioContext;
+                state.audioCtx = new AC();
+            }
+            if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
+            state.osc = state.audioCtx.createOscillator();
+            state.gain = state.audioCtx.createGain();
+            state.osc.type = 'sine';
+            state.osc.connect(state.gain);
+            state.gain.connect(state.audioCtx.destination);
+            state.osc.start();
+            state.audioOn = true;
+        }
+
+        function stopAudio() {
+            if (state.osc) {
+                try { state.osc.stop(); state.osc.disconnect(); } catch(e) {}
+                state.osc = null;
+            }
+            state.audioOn = false;
+        }
+
+        function toggleMute() {
+            state.muted = !state.muted;
+            var btn = els['btn-audio'];
+            if (state.muted) {
+                btn.innerHTML = '<i data-lucide="speaker"></i> Habilitar Audio';
+                btn.style.background = 'linear-gradient(135deg, var(--wood) 0%, var(--wood-dark) 100%)';
+                stopAudio();
+            } else {
+                btn.innerHTML = '<i data-lucide="speaker"></i> Detener Audio';
+                btn.style.background = 'linear-gradient(135deg, var(--terracotta) 0%, var(--terracotta-dark) 100%)';
+                if (state.running && !state.paused) startAudio();
+            }
+            lucide.createIcons();
+        }
+
+        function updateAudio(freq, dist) {
+            if (!state.audioOn || !state.osc) return;
+            state.osc.frequency.setValueAtTime(freq, state.audioCtx.currentTime);
+            var vol = parseFloat(els['rng-volume'].value);
+            var amp = Math.max(0, Math.min(1, vol / (1 + dist * DIST_DECAY)));
+            state.gain.gain.setValueAtTime(amp, state.audioCtx.currentTime);
+        }
+
+        function loadPreset() {
+            var p = presets[els['preset-combo'].value];
+            if (!p) return;
+            var map = {
+                'source-vx': p.vsx, 'source-vy': p.vsy,
+                'obs-vx': p.vox, 'obs-vy': p.voy,
+                'source-freq': p.freq
+            };
+            for (var k in map) {
+                document.getElementById('num-' + k).value = map[k];
+                document.getElementById('rng-' + k).value = map[k];
+            }
+            refreshMach();
+        }
+
+        function resetParams() {
+            var defs = {'source-freq': 440, 'source-vx': 100, 'source-vy': 0, 'obs-vx': 0, 'obs-vy': 0, 'dist': 200};
+            for (var k in defs) {
+                document.getElementById('num-' + k).value = defs[k];
+                document.getElementById('rng-' + k).value = defs[k];
+            }
+            els['preset-combo'].value = '';
+            clearTable();
+            if (state.running) stopSim();
+            refreshMach();
+        }
+
+        function addRow(ms, freq) {
+            var tbody = els['data-table'].querySelector('tbody');
+            var row = tbody.insertRow();
+            row.insertCell(0).innerText = Math.round(ms);
+            row.insertCell(1).innerText = freq.toFixed(2);
+            els['data-table'].parentElement.scrollTop = els['data-table'].parentElement.scrollHeight;
+        }
+
+        function clearTable() { els['data-table'].querySelector('tbody').innerHTML = ''; }
+
+        function exportCSV() {
+            var rows = Array.from(els['data-table'].querySelectorAll('tbody tr'));
+            if (!rows.length) return;
+            var csv = 'Tiempo(ms),Frecuencia(Hz)\n';
+            rows.forEach(function(tr) {
+                var cells = tr.querySelectorAll('td');
+                csv += cells[0].innerText + ',' + cells[1].innerText + '\n';
+            });
+            var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'doppler_data.csv';
+            a.style.visibility = 'hidden';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function switchTab(id) {
+            if (id === 'math' && els['tab-btn-math'].disabled) return;
+            els['tab-btn-viz'].classList.toggle('active', id === 'viz');
+            els['tab-btn-math'].classList.toggle('active', id === 'math');
+            document.getElementById('tab-content-viz').classList.toggle('active', id === 'viz');
+            document.getElementById('tab-content-math').classList.toggle('active', id === 'math');
+            if (id === 'viz') {
+                resizeCanvases();
+                drawSim();
+                drawGraph();
+            }
+        }
+
+        function buildMathReport() {
+            var snaps = state.snaps;
+            if (snaps.length < 3) return;
+            var pick = [0, Math.floor(snaps.length / 2), snaps.length - 1];
+            var labels = ['Inicio del recorrido', 'Punto Intermedio', 'Final del recorrido'];
+
+            var out = '<div class="panel-section" style="background:linear-gradient(135deg,var(--terracotta) 0%,var(--terracotta-dark) 100%);color:white;margin-bottom:16px;">'
+                + '<h3 style="font-size:15px;display:flex;align-items:center;gap:8px;margin-bottom:8px;"><i data-lucide="sigma"></i> Fundamento Matemático (Efecto Doppler 2D)</h3>'
+                + '<p style="font-size:12px;opacity:0.9;margin-bottom:12px;">El cálculo se realiza mediante proyecciones vectoriales. Se extrae el vector unitario entre la fuente y el observador, y se calcula la velocidad radial de cada uno.</p>'
+                + '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-sm);padding:10px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:14px;">'
+                + "f' = f\u2080 \u00d7 (c - v_or) / (c - v_sr)</div></div>";
+
+            pick.forEach(function(idx, n) {
+                var s = snaps[idx];
+                out += '<div class="formula-section"><div class="formula-header"><span>Fase ' + (n + 1) + ': ' + labels[n] + '</span>'
+                    + '<span style="color:var(--text-muted);">t = ' + s.t.toFixed(1) + ' ms</span></div>'
+                    + '<div class="formula-content">'
+                    + '<div class="formula-step"><strong>1. Posiciones Actuales:</strong><br>'
+                    + 'P_fuente = (' + s.xs.toFixed(2) + ', ' + s.ys.toFixed(2) + ')m &nbsp;|&nbsp; P_obs = (' + s.xo.toFixed(2) + ', ' + s.yo.toFixed(2) + ')m</div>'
+                    + '<div class="formula-step"><strong>2. Vector Distancia (d) y Magnitud:</strong><br>'
+                    + 'd = P_obs - P_fuente = (' + s.dx.toFixed(2) + ', ' + s.dy.toFixed(2) + ')m<br>'
+                    + '|d| = \u221a(' + s.dx.toFixed(2) + '\u00b2 + ' + s.dy.toFixed(2) + '\u00b2) = ' + s.dist.toFixed(2) + 'm</div>'
+                    + '<div class="formula-step"><strong>3. Vector Unitario de Dirección (u):</strong><br>'
+                    + 'u = d / |d| = (' + s.ux.toFixed(4) + ', ' + s.uy.toFixed(4) + ')</div>'
+                    + '<div class="formula-step"><strong>4. Velocidades Radiales (Producto Punto):</strong><br>'
+                    + 'v_sr (fuente) = v_fuente \u00b7 u = (' + s.vsx.toFixed(2) + ', ' + s.vsy.toFixed(2) + ') \u00b7 (' + s.ux.toFixed(4) + ', ' + s.uy.toFixed(4) + ') = <strong>' + s.vsr.toFixed(2) + ' m/s</strong><br>'
+                    + 'v_or (obs) = v_obs \u00b7 u = (' + s.vox.toFixed(2) + ', ' + s.voy.toFixed(2) + ') \u00b7 (' + s.ux.toFixed(4) + ', ' + s.uy.toFixed(4) + ') = <strong>' + s.vor.toFixed(2) + ' m/s</strong></div>'
+                    + '<div class="formula-step" style="text-align:center;margin-top:12px;"><strong>5. Frecuencia Resultante (c = 343 m/s):</strong><br>'
+                    + "<div style=\"margin-top:8px;\">f' = " + s.f0 + ' \u00d7 (343 - ' + s.vor.toFixed(2) + ') / (343 - ' + s.vsr.toFixed(2) + ') = <span class="formula-highlight">' + s.fp.toFixed(2) + ' Hz</span></div></div></div></div>';
+            });
+
+            document.getElementById('tab-content-math').innerHTML = out;
+            lucide.createIcons();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
